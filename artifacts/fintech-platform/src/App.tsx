@@ -22,6 +22,7 @@ import VendorLeads from "@/pages/vendor/leads";
 import VendorRecovery from "@/pages/vendor/recovery";
 import VendorTeam from "@/pages/vendor/team";
 import VendorCommissions from "@/pages/vendor/commissions";
+import VendorAffiliate from "@/pages/vendor/affiliate";
 
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminApplications from "@/pages/admin/applications";
@@ -31,6 +32,20 @@ import AdminLeads from "@/pages/admin/leads";
 import AdminKyc from "@/pages/admin/kyc";
 import AdminCampaigns from "@/pages/admin/campaigns";
 import AdminAnalytics from "@/pages/admin/analytics";
+import AdminLenders from "@/pages/admin/lenders";
+import AdminProducts from "@/pages/admin/products";
+
+import ProductsMarket from "@/pages/products/index";
+import ProductDetail from "@/pages/products/detail";
+import PersonalLoans from "@/pages/products/personal-loans";
+import BusinessLoans from "@/pages/products/business-loans";
+import CreditCards from "@/pages/products/credit-cards";
+import HomeLoans from "@/pages/products/home-loans";
+import Insurance from "@/pages/products/insurance";
+import GoldLoans from "@/pages/products/gold-loans";
+
+import EmiCalculator from "@/pages/tools/emi-calculator";
+import EligibilityChecker from "@/pages/tools/eligibility";
 
 const queryClient = new QueryClient();
 
@@ -59,7 +74,21 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       
-      {/* Customer Routes (Public/Protected mixed based on requirement) */}
+      {/* Public Product Pages */}
+      <Route path="/products" component={ProductsMarket} />
+      <Route path="/products/personal-loans" component={PersonalLoans} />
+      <Route path="/products/business-loans" component={BusinessLoans} />
+      <Route path="/products/credit-cards" component={CreditCards} />
+      <Route path="/products/home-loans" component={HomeLoans} />
+      <Route path="/products/insurance" component={Insurance} />
+      <Route path="/products/gold-loans" component={GoldLoans} />
+      <Route path="/products/:id" component={ProductDetail} />
+
+      {/* Tools (Public) */}
+      <Route path="/tools/emi-calculator" component={EmiCalculator} />
+      <Route path="/tools/eligibility" component={EligibilityChecker} />
+
+      {/* Customer Routes */}
       <Route path="/apply" component={Apply} />
       <Route path="/apply/:type" component={ApplyForm} />
       <Route path="/track" component={Track} />
@@ -90,6 +119,9 @@ function Router() {
       <Route path="/vendor/commissions">
         {() => <ProtectedRoute component={VendorCommissions} allowedRoles={["vendor", "admin"]} />}
       </Route>
+      <Route path="/vendor/affiliate">
+        {() => <ProtectedRoute component={VendorAffiliate} allowedRoles={["vendor", "admin"]} />}
+      </Route>
 
       {/* Admin Routes */}
       <Route path="/admin/dashboard">
@@ -100,6 +132,12 @@ function Router() {
       </Route>
       <Route path="/admin/vendors">
         {() => <ProtectedRoute component={AdminVendors} allowedRoles={["admin"]} />}
+      </Route>
+      <Route path="/admin/lenders">
+        {() => <ProtectedRoute component={AdminLenders} allowedRoles={["admin"]} />}
+      </Route>
+      <Route path="/admin/products">
+        {() => <ProtectedRoute component={AdminProducts} allowedRoles={["admin"]} />}
       </Route>
       <Route path="/admin/users">
         {() => <ProtectedRoute component={AdminUsers} allowedRoles={["admin"]} />}

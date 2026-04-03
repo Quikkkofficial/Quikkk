@@ -6,3 +6,5 @@ export * from "./documents";
 export * from "./leads";
 export * from "./communications";
 export * from "./notifications";
+export * from "./lenders";
+export * from "./products";

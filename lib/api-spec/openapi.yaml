@@ -29,6 +29,12 @@ tags:
     description: Analytics & dashboard data
   - name: leads
     description: Lead management
+  - name: lenders
+    description: Lender/NBFC/Bank management
+  - name: products
+    description: Financial product catalogue
+  - name: tools
+    description: Calculators and eligibility tools
 
 paths:
   /healthz:
@@ -919,6 +925,252 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RecentActivityResponse"
+
+  # LENDERS
+  /lenders:
+    get:
+      operationId: listLenders
+      tags: [lenders]
+      summary: List all lenders
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [bank, nbfc, insurance_company]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive]
+      responses:
+        "200":
+          description: List of lenders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LenderListResponse"
+    post:
+      operationId: createLender
+      tags: [lenders]
+      summary: Create a lender
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLenderRequest"
+      responses:
+        "201":
+          description: Lender created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lender"
+
+  /lenders/{id}:
+    get:
+      operationId: getLender
+      tags: [lenders]
+      summary: Get lender by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lender details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lender"
+    put:
+      operationId: updateLender
+      tags: [lenders]
+      summary: Update lender
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLenderRequest"
+      responses:
+        "200":
+          description: Updated lender
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lender"
+    delete:
+      operationId: deleteLender
+      tags: [lenders]
+      summary: Delete lender
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # PRODUCTS
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all financial products
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [personal_loan, business_loan, credit_card, health_insurance, life_insurance, motor_insurance, home_loan, gold_loan]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, featured]
+        - name: featured
+          in: query
+          schema:
+            type: string
+            enum: ["true", "false"]
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a financial product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    put:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # TOOLS
+  /tools/emi-calculator:
+    post:
+      operationId: calculateEmi
+      tags: [tools]
+      summary: EMI calculator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmiCalculatorRequest"
+      responses:
+        "200":
+          description: EMI calculation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmiCalculatorResponse"
+
+  /tools/eligibility-check:
+    post:
+      operationId: checkEligibility
+      tags: [tools]
+      summary: Eligibility checker
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EligibilityCheckRequest"
+      responses:
+        "200":
+          description: Eligibility result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityCheckResponse"
 
 components:
   schemas:
@@ -1976,3 +2228,406 @@ components:
             $ref: "#/components/schemas/RecentActivity"
       required:
         - activities
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+
+    Lender:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [bank, nbfc, insurance_company]
+        logoUrl:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        website:
+          type: string
+          nullable: true
+        contactEmail:
+          type: string
+          nullable: true
+        contactPhone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, inactive]
+        minInterestRate:
+          type: number
+          nullable: true
+        maxInterestRate:
+          type: number
+          nullable: true
+        maxLoanAmount:
+          type: number
+          nullable: true
+        minCibil:
+          type: number
+          nullable: true
+        processingFee:
+          type: number
+          nullable: true
+        turnaroundDays:
+          type: number
+          nullable: true
+        totalApplications:
+          type: number
+          nullable: true
+        approvalRate:
+          type: number
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - type
+        - status
+        - createdAt
+        - updatedAt
+
+    CreateLenderRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [bank, nbfc, insurance_company]
+        logoUrl:
+          type: string
+        description:
+          type: string
+        website:
+          type: string
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive]
+        minInterestRate:
+          type: number
+        maxInterestRate:
+          type: number
+        maxLoanAmount:
+          type: number
+        minCibil:
+          type: number
+        processingFee:
+          type: number
+        turnaroundDays:
+          type: number
+      required:
+        - name
+        - type
+
+    LenderListResponse:
+      type: object
+      properties:
+        lenders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lender"
+        total:
+          type: integer
+      required:
+        - lenders
+        - total
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+          enum: [personal_loan, business_loan, credit_card, health_insurance, life_insurance, motor_insurance, home_loan, gold_loan]
+        lenderId:
+          type: integer
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        minAmount:
+          type: number
+          nullable: true
+        maxAmount:
+          type: number
+          nullable: true
+        minTenure:
+          type: integer
+          nullable: true
+        maxTenure:
+          type: integer
+          nullable: true
+        interestRate:
+          type: number
+          nullable: true
+        processingFee:
+          type: number
+          nullable: true
+        minCibil:
+          type: integer
+          nullable: true
+        minIncome:
+          type: number
+          nullable: true
+        employmentTypes:
+          type: string
+          nullable: true
+        ageMin:
+          type: integer
+          nullable: true
+        ageMax:
+          type: integer
+          nullable: true
+        features:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, inactive, featured]
+        commissionRate:
+          type: number
+          nullable: true
+        featured:
+          type: boolean
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        badge:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - category
+        - status
+        - createdAt
+        - updatedAt
+
+    CreateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum: [personal_loan, business_loan, credit_card, health_insurance, life_insurance, motor_insurance, home_loan, gold_loan]
+        lenderId:
+          type: integer
+        description:
+          type: string
+        minAmount:
+          type: number
+        maxAmount:
+          type: number
+        minTenure:
+          type: integer
+        maxTenure:
+          type: integer
+        interestRate:
+          type: number
+        processingFee:
+          type: number
+        minCibil:
+          type: integer
+        minIncome:
+          type: number
+        employmentTypes:
+          type: string
+        ageMin:
+          type: integer
+        ageMax:
+          type: integer
+        features:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, featured]
+        commissionRate:
+          type: number
+        featured:
+          type: boolean
+        imageUrl:
+          type: string
+        badge:
+          type: string
+      required:
+        - name
+        - category
+
+    ProductListResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        total:
+          type: integer
+      required:
+        - products
+        - total
+
+    EmiCalculatorRequest:
+      type: object
+      properties:
+        principal:
+          type: number
+        annualRate:
+          type: number
+        tenureMonths:
+          type: integer
+      required:
+        - principal
+        - annualRate
+        - tenureMonths
+
+    EmiScheduleItem:
+      type: object
+      properties:
+        month:
+          type: integer
+        emi:
+          type: number
+        principal:
+          type: number
+        interest:
+          type: number
+        outstanding:
+          type: number
+      required:
+        - month
+        - emi
+        - principal
+        - interest
+        - outstanding
+
+    EmiCalculatorResponse:
+      type: object
+      properties:
+        emi:
+          type: number
+        totalPayment:
+          type: number
+        totalInterest:
+          type: number
+        principal:
+          type: number
+        annualRate:
+          type: number
+        tenureMonths:
+          type: integer
+        schedule:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmiScheduleItem"
+      required:
+        - emi
+        - totalPayment
+        - totalInterest
+        - principal
+        - annualRate
+        - tenureMonths
+        - schedule
+
+    EligibilityCheckRequest:
+      type: object
+      properties:
+        monthlyIncome:
+          type: number
+        cibilScore:
+          type: integer
+        employmentType:
+          type: string
+          enum: [salaried, self_employed, business]
+        age:
+          type: integer
+        loanAmount:
+          type: number
+        loanType:
+          type: string
+      required:
+        - monthlyIncome
+        - cibilScore
+        - employmentType
+        - age
+
+    EligibilityLender:
+      type: object
+      properties:
+        name:
+          type: string
+        rate:
+          type: number
+        maxAmount:
+          type: number
+        approved:
+          type: boolean
+      required:
+        - name
+        - rate
+        - maxAmount
+        - approved
+
+    EligibilityCheckResponse:
+      type: object
+      properties:
+        eligible:
+          type: boolean
+        score:
+          type: integer
+        maxScore:
+          type: integer
+        checks:
+          type: object
+          additionalProperties:
+            type: boolean
+        maxEligibleAmount:
+          type: number
+        rateOfInterest:
+          type: number
+        lenders:
+          type: array
+          items:
+            $ref: "#/components/schemas/EligibilityLender"
+        message:
+          type: string
+      required:
+        - eligible
+        - score
+        - maxScore
+        - checks
+        - maxEligibleAmount
+        - rateOfInterest
+        - lenders
+        - message

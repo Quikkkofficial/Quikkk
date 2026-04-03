@@ -688,6 +688,249 @@ export interface RecentActivityResponse {
   activities: RecentActivity[];
 }
 
+export interface SuccessResponse {
+  success: boolean;
+}
+
+export type LenderType = (typeof LenderType)[keyof typeof LenderType];
+
+export const LenderType = {
+  bank: "bank",
+  nbfc: "nbfc",
+  insurance_company: "insurance_company",
+} as const;
+
+export type LenderStatus = (typeof LenderStatus)[keyof typeof LenderStatus];
+
+export const LenderStatus = {
+  active: "active",
+  inactive: "inactive",
+} as const;
+
+export interface Lender {
+  id: number;
+  name: string;
+  type: LenderType;
+  logoUrl?: string | null;
+  description?: string | null;
+  website?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  status: LenderStatus;
+  minInterestRate?: number | null;
+  maxInterestRate?: number | null;
+  maxLoanAmount?: number | null;
+  minCibil?: number | null;
+  processingFee?: number | null;
+  turnaroundDays?: number | null;
+  totalApplications?: number | null;
+  approvalRate?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CreateLenderRequestType =
+  (typeof CreateLenderRequestType)[keyof typeof CreateLenderRequestType];
+
+export const CreateLenderRequestType = {
+  bank: "bank",
+  nbfc: "nbfc",
+  insurance_company: "insurance_company",
+} as const;
+
+export type CreateLenderRequestStatus =
+  (typeof CreateLenderRequestStatus)[keyof typeof CreateLenderRequestStatus];
+
+export const CreateLenderRequestStatus = {
+  active: "active",
+  inactive: "inactive",
+} as const;
+
+export interface CreateLenderRequest {
+  name: string;
+  type: CreateLenderRequestType;
+  logoUrl?: string;
+  description?: string;
+  website?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  status?: CreateLenderRequestStatus;
+  minInterestRate?: number;
+  maxInterestRate?: number;
+  maxLoanAmount?: number;
+  minCibil?: number;
+  processingFee?: number;
+  turnaroundDays?: number;
+}
+
+export interface LenderListResponse {
+  lenders: Lender[];
+  total: number;
+}
+
+export type ProductCategory =
+  (typeof ProductCategory)[keyof typeof ProductCategory];
+
+export const ProductCategory = {
+  personal_loan: "personal_loan",
+  business_loan: "business_loan",
+  credit_card: "credit_card",
+  health_insurance: "health_insurance",
+  life_insurance: "life_insurance",
+  motor_insurance: "motor_insurance",
+  home_loan: "home_loan",
+  gold_loan: "gold_loan",
+} as const;
+
+export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus];
+
+export const ProductStatus = {
+  active: "active",
+  inactive: "inactive",
+  featured: "featured",
+} as const;
+
+export interface Product {
+  id: number;
+  name: string;
+  category: ProductCategory;
+  lenderId?: number | null;
+  description?: string | null;
+  minAmount?: number | null;
+  maxAmount?: number | null;
+  minTenure?: number | null;
+  maxTenure?: number | null;
+  interestRate?: number | null;
+  processingFee?: number | null;
+  minCibil?: number | null;
+  minIncome?: number | null;
+  employmentTypes?: string | null;
+  ageMin?: number | null;
+  ageMax?: number | null;
+  features?: string | null;
+  status: ProductStatus;
+  commissionRate?: number | null;
+  featured?: boolean | null;
+  imageUrl?: string | null;
+  badge?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CreateProductRequestCategory =
+  (typeof CreateProductRequestCategory)[keyof typeof CreateProductRequestCategory];
+
+export const CreateProductRequestCategory = {
+  personal_loan: "personal_loan",
+  business_loan: "business_loan",
+  credit_card: "credit_card",
+  health_insurance: "health_insurance",
+  life_insurance: "life_insurance",
+  motor_insurance: "motor_insurance",
+  home_loan: "home_loan",
+  gold_loan: "gold_loan",
+} as const;
+
+export type CreateProductRequestStatus =
+  (typeof CreateProductRequestStatus)[keyof typeof CreateProductRequestStatus];
+
+export const CreateProductRequestStatus = {
+  active: "active",
+  inactive: "inactive",
+  featured: "featured",
+} as const;
+
+export interface CreateProductRequest {
+  name: string;
+  category: CreateProductRequestCategory;
+  lenderId?: number;
+  description?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  minTenure?: number;
+  maxTenure?: number;
+  interestRate?: number;
+  processingFee?: number;
+  minCibil?: number;
+  minIncome?: number;
+  employmentTypes?: string;
+  ageMin?: number;
+  ageMax?: number;
+  features?: string;
+  status?: CreateProductRequestStatus;
+  commissionRate?: number;
+  featured?: boolean;
+  imageUrl?: string;
+  badge?: string;
+}
+
+export interface ProductListResponse {
+  products: Product[];
+  total: number;
+}
+
+export interface EmiCalculatorRequest {
+  principal: number;
+  annualRate: number;
+  tenureMonths: number;
+}
+
+export interface EmiScheduleItem {
+  month: number;
+  emi: number;
+  principal: number;
+  interest: number;
+  outstanding: number;
+}
+
+export interface EmiCalculatorResponse {
+  emi: number;
+  totalPayment: number;
+  totalInterest: number;
+  principal: number;
+  annualRate: number;
+  tenureMonths: number;
+  schedule: EmiScheduleItem[];
+}
+
+export type EligibilityCheckRequestEmploymentType =
+  (typeof EligibilityCheckRequestEmploymentType)[keyof typeof EligibilityCheckRequestEmploymentType];
+
+export const EligibilityCheckRequestEmploymentType = {
+  salaried: "salaried",
+  self_employed: "self_employed",
+  business: "business",
+} as const;
+
+export interface EligibilityCheckRequest {
+  monthlyIncome: number;
+  cibilScore: number;
+  employmentType: EligibilityCheckRequestEmploymentType;
+  age: number;
+  loanAmount?: number;
+  loanType?: string;
+}
+
+export interface EligibilityLender {
+  name: string;
+  rate: number;
+  maxAmount: number;
+  approved: boolean;
+}
+
+export type EligibilityCheckResponseChecks = { [key: string]: boolean };
+
+export interface EligibilityCheckResponse {
+  eligible: boolean;
+  score: number;
+  maxScore: number;
+  checks: EligibilityCheckResponseChecks;
+  maxEligibleAmount: number;
+  rateOfInterest: number;
+  lenders: EligibilityLender[];
+  message: string;
+}
+
 export type ListUsersParams = {
   role?: ListUsersRole;
   page?: number;
@@ -891,3 +1134,62 @@ export const GetVendorAnalyticsPeriod = {
 export type GetRecentActivityParams = {
   limit?: number;
 };
+
+export type ListLendersParams = {
+  type?: ListLendersType;
+  status?: ListLendersStatus;
+};
+
+export type ListLendersType =
+  (typeof ListLendersType)[keyof typeof ListLendersType];
+
+export const ListLendersType = {
+  bank: "bank",
+  nbfc: "nbfc",
+  insurance_company: "insurance_company",
+} as const;
+
+export type ListLendersStatus =
+  (typeof ListLendersStatus)[keyof typeof ListLendersStatus];
+
+export const ListLendersStatus = {
+  active: "active",
+  inactive: "inactive",
+} as const;
+
+export type ListProductsParams = {
+  category?: ListProductsCategory;
+  status?: ListProductsStatus;
+  featured?: ListProductsFeatured;
+};
+
+export type ListProductsCategory =
+  (typeof ListProductsCategory)[keyof typeof ListProductsCategory];
+
+export const ListProductsCategory = {
+  personal_loan: "personal_loan",
+  business_loan: "business_loan",
+  credit_card: "credit_card",
+  health_insurance: "health_insurance",
+  life_insurance: "life_insurance",
+  motor_insurance: "motor_insurance",
+  home_loan: "home_loan",
+  gold_loan: "gold_loan",
+} as const;
+
+export type ListProductsStatus =
+  (typeof ListProductsStatus)[keyof typeof ListProductsStatus];
+
+export const ListProductsStatus = {
+  active: "active",
+  inactive: "inactive",
+  featured: "featured",
+} as const;
+
+export type ListProductsFeatured =
+  (typeof ListProductsFeatured)[keyof typeof ListProductsFeatured];
+
+export const ListProductsFeatured = {
+  true: "true",
+  false: "false",
+} as const;

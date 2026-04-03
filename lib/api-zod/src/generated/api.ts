@@ -1055,3 +1055,428 @@ export const GetRecentActivityResponse = zod.object({
     }),
   ),
 });
+
+/**
+ * @summary List all lenders
+ */
+export const ListLendersQueryParams = zod.object({
+  type: zod.enum(["bank", "nbfc", "insurance_company"]).optional(),
+  status: zod.enum(["active", "inactive"]).optional(),
+});
+
+export const ListLendersResponse = zod.object({
+  lenders: zod.array(
+    zod.object({
+      id: zod.number(),
+      name: zod.string(),
+      type: zod.enum(["bank", "nbfc", "insurance_company"]),
+      logoUrl: zod.string().nullish(),
+      description: zod.string().nullish(),
+      website: zod.string().nullish(),
+      contactEmail: zod.string().nullish(),
+      contactPhone: zod.string().nullish(),
+      status: zod.enum(["active", "inactive"]),
+      minInterestRate: zod.number().nullish(),
+      maxInterestRate: zod.number().nullish(),
+      maxLoanAmount: zod.number().nullish(),
+      minCibil: zod.number().nullish(),
+      processingFee: zod.number().nullish(),
+      turnaroundDays: zod.number().nullish(),
+      totalApplications: zod.number().nullish(),
+      approvalRate: zod.number().nullish(),
+      createdAt: zod.coerce.date(),
+      updatedAt: zod.coerce.date(),
+    }),
+  ),
+  total: zod.number(),
+});
+
+/**
+ * @summary Create a lender
+ */
+export const CreateLenderBody = zod.object({
+  name: zod.string(),
+  type: zod.enum(["bank", "nbfc", "insurance_company"]),
+  logoUrl: zod.string().optional(),
+  description: zod.string().optional(),
+  website: zod.string().optional(),
+  contactEmail: zod.string().optional(),
+  contactPhone: zod.string().optional(),
+  status: zod.enum(["active", "inactive"]).optional(),
+  minInterestRate: zod.number().optional(),
+  maxInterestRate: zod.number().optional(),
+  maxLoanAmount: zod.number().optional(),
+  minCibil: zod.number().optional(),
+  processingFee: zod.number().optional(),
+  turnaroundDays: zod.number().optional(),
+});
+
+/**
+ * @summary Get lender by ID
+ */
+export const GetLenderParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetLenderResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  type: zod.enum(["bank", "nbfc", "insurance_company"]),
+  logoUrl: zod.string().nullish(),
+  description: zod.string().nullish(),
+  website: zod.string().nullish(),
+  contactEmail: zod.string().nullish(),
+  contactPhone: zod.string().nullish(),
+  status: zod.enum(["active", "inactive"]),
+  minInterestRate: zod.number().nullish(),
+  maxInterestRate: zod.number().nullish(),
+  maxLoanAmount: zod.number().nullish(),
+  minCibil: zod.number().nullish(),
+  processingFee: zod.number().nullish(),
+  turnaroundDays: zod.number().nullish(),
+  totalApplications: zod.number().nullish(),
+  approvalRate: zod.number().nullish(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Update lender
+ */
+export const UpdateLenderParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateLenderBody = zod.object({
+  name: zod.string(),
+  type: zod.enum(["bank", "nbfc", "insurance_company"]),
+  logoUrl: zod.string().optional(),
+  description: zod.string().optional(),
+  website: zod.string().optional(),
+  contactEmail: zod.string().optional(),
+  contactPhone: zod.string().optional(),
+  status: zod.enum(["active", "inactive"]).optional(),
+  minInterestRate: zod.number().optional(),
+  maxInterestRate: zod.number().optional(),
+  maxLoanAmount: zod.number().optional(),
+  minCibil: zod.number().optional(),
+  processingFee: zod.number().optional(),
+  turnaroundDays: zod.number().optional(),
+});
+
+export const UpdateLenderResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  type: zod.enum(["bank", "nbfc", "insurance_company"]),
+  logoUrl: zod.string().nullish(),
+  description: zod.string().nullish(),
+  website: zod.string().nullish(),
+  contactEmail: zod.string().nullish(),
+  contactPhone: zod.string().nullish(),
+  status: zod.enum(["active", "inactive"]),
+  minInterestRate: zod.number().nullish(),
+  maxInterestRate: zod.number().nullish(),
+  maxLoanAmount: zod.number().nullish(),
+  minCibil: zod.number().nullish(),
+  processingFee: zod.number().nullish(),
+  turnaroundDays: zod.number().nullish(),
+  totalApplications: zod.number().nullish(),
+  approvalRate: zod.number().nullish(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete lender
+ */
+export const DeleteLenderParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteLenderResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary List all financial products
+ */
+export const ListProductsQueryParams = zod.object({
+  category: zod
+    .enum([
+      "personal_loan",
+      "business_loan",
+      "credit_card",
+      "health_insurance",
+      "life_insurance",
+      "motor_insurance",
+      "home_loan",
+      "gold_loan",
+    ])
+    .optional(),
+  status: zod.enum(["active", "inactive", "featured"]).optional(),
+  featured: zod.enum(["true", "false"]).optional(),
+});
+
+export const ListProductsResponse = zod.object({
+  products: zod.array(
+    zod.object({
+      id: zod.number(),
+      name: zod.string(),
+      category: zod.enum([
+        "personal_loan",
+        "business_loan",
+        "credit_card",
+        "health_insurance",
+        "life_insurance",
+        "motor_insurance",
+        "home_loan",
+        "gold_loan",
+      ]),
+      lenderId: zod.number().nullish(),
+      description: zod.string().nullish(),
+      minAmount: zod.number().nullish(),
+      maxAmount: zod.number().nullish(),
+      minTenure: zod.number().nullish(),
+      maxTenure: zod.number().nullish(),
+      interestRate: zod.number().nullish(),
+      processingFee: zod.number().nullish(),
+      minCibil: zod.number().nullish(),
+      minIncome: zod.number().nullish(),
+      employmentTypes: zod.string().nullish(),
+      ageMin: zod.number().nullish(),
+      ageMax: zod.number().nullish(),
+      features: zod.string().nullish(),
+      status: zod.enum(["active", "inactive", "featured"]),
+      commissionRate: zod.number().nullish(),
+      featured: zod.boolean().nullish(),
+      imageUrl: zod.string().nullish(),
+      badge: zod.string().nullish(),
+      createdAt: zod.coerce.date(),
+      updatedAt: zod.coerce.date(),
+    }),
+  ),
+  total: zod.number(),
+});
+
+/**
+ * @summary Create a financial product
+ */
+export const CreateProductBody = zod.object({
+  name: zod.string(),
+  category: zod.enum([
+    "personal_loan",
+    "business_loan",
+    "credit_card",
+    "health_insurance",
+    "life_insurance",
+    "motor_insurance",
+    "home_loan",
+    "gold_loan",
+  ]),
+  lenderId: zod.number().optional(),
+  description: zod.string().optional(),
+  minAmount: zod.number().optional(),
+  maxAmount: zod.number().optional(),
+  minTenure: zod.number().optional(),
+  maxTenure: zod.number().optional(),
+  interestRate: zod.number().optional(),
+  processingFee: zod.number().optional(),
+  minCibil: zod.number().optional(),
+  minIncome: zod.number().optional(),
+  employmentTypes: zod.string().optional(),
+  ageMin: zod.number().optional(),
+  ageMax: zod.number().optional(),
+  features: zod.string().optional(),
+  status: zod.enum(["active", "inactive", "featured"]).optional(),
+  commissionRate: zod.number().optional(),
+  featured: zod.boolean().optional(),
+  imageUrl: zod.string().optional(),
+  badge: zod.string().optional(),
+});
+
+/**
+ * @summary Get product by ID
+ */
+export const GetProductParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetProductResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  category: zod.enum([
+    "personal_loan",
+    "business_loan",
+    "credit_card",
+    "health_insurance",
+    "life_insurance",
+    "motor_insurance",
+    "home_loan",
+    "gold_loan",
+  ]),
+  lenderId: zod.number().nullish(),
+  description: zod.string().nullish(),
+  minAmount: zod.number().nullish(),
+  maxAmount: zod.number().nullish(),
+  minTenure: zod.number().nullish(),
+  maxTenure: zod.number().nullish(),
+  interestRate: zod.number().nullish(),
+  processingFee: zod.number().nullish(),
+  minCibil: zod.number().nullish(),
+  minIncome: zod.number().nullish(),
+  employmentTypes: zod.string().nullish(),
+  ageMin: zod.number().nullish(),
+  ageMax: zod.number().nullish(),
+  features: zod.string().nullish(),
+  status: zod.enum(["active", "inactive", "featured"]),
+  commissionRate: zod.number().nullish(),
+  featured: zod.boolean().nullish(),
+  imageUrl: zod.string().nullish(),
+  badge: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Update product
+ */
+export const UpdateProductParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateProductBody = zod.object({
+  name: zod.string(),
+  category: zod.enum([
+    "personal_loan",
+    "business_loan",
+    "credit_card",
+    "health_insurance",
+    "life_insurance",
+    "motor_insurance",
+    "home_loan",
+    "gold_loan",
+  ]),
+  lenderId: zod.number().optional(),
+  description: zod.string().optional(),
+  minAmount: zod.number().optional(),
+  maxAmount: zod.number().optional(),
+  minTenure: zod.number().optional(),
+  maxTenure: zod.number().optional(),
+  interestRate: zod.number().optional(),
+  processingFee: zod.number().optional(),
+  minCibil: zod.number().optional(),
+  minIncome: zod.number().optional(),
+  employmentTypes: zod.string().optional(),
+  ageMin: zod.number().optional(),
+  ageMax: zod.number().optional(),
+  features: zod.string().optional(),
+  status: zod.enum(["active", "inactive", "featured"]).optional(),
+  commissionRate: zod.number().optional(),
+  featured: zod.boolean().optional(),
+  imageUrl: zod.string().optional(),
+  badge: zod.string().optional(),
+});
+
+export const UpdateProductResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  category: zod.enum([
+    "personal_loan",
+    "business_loan",
+    "credit_card",
+    "health_insurance",
+    "life_insurance",
+    "motor_insurance",
+    "home_loan",
+    "gold_loan",
+  ]),
+  lenderId: zod.number().nullish(),
+  description: zod.string().nullish(),
+  minAmount: zod.number().nullish(),
+  maxAmount: zod.number().nullish(),
+  minTenure: zod.number().nullish(),
+  maxTenure: zod.number().nullish(),
+  interestRate: zod.number().nullish(),
+  processingFee: zod.number().nullish(),
+  minCibil: zod.number().nullish(),
+  minIncome: zod.number().nullish(),
+  employmentTypes: zod.string().nullish(),
+  ageMin: zod.number().nullish(),
+  ageMax: zod.number().nullish(),
+  features: zod.string().nullish(),
+  status: zod.enum(["active", "inactive", "featured"]),
+  commissionRate: zod.number().nullish(),
+  featured: zod.boolean().nullish(),
+  imageUrl: zod.string().nullish(),
+  badge: zod.string().nullish(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete product
+ */
+export const DeleteProductParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteProductResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary EMI calculator
+ */
+export const CalculateEmiBody = zod.object({
+  principal: zod.number(),
+  annualRate: zod.number(),
+  tenureMonths: zod.number(),
+});
+
+export const CalculateEmiResponse = zod.object({
+  emi: zod.number(),
+  totalPayment: zod.number(),
+  totalInterest: zod.number(),
+  principal: zod.number(),
+  annualRate: zod.number(),
+  tenureMonths: zod.number(),
+  schedule: zod.array(
+    zod.object({
+      month: zod.number(),
+      emi: zod.number(),
+      principal: zod.number(),
+      interest: zod.number(),
+      outstanding: zod.number(),
+    }),
+  ),
+});
+
+/**
+ * @summary Eligibility checker
+ */
+export const CheckEligibilityBody = zod.object({
+  monthlyIncome: zod.number(),
+  cibilScore: zod.number(),
+  employmentType: zod.enum(["salaried", "self_employed", "business"]),
+  age: zod.number(),
+  loanAmount: zod.number().optional(),
+  loanType: zod.string().optional(),
+});
+
+export const CheckEligibilityResponse = zod.object({
+  eligible: zod.boolean(),
+  score: zod.number(),
+  maxScore: zod.number(),
+  checks: zod.record(zod.string(), zod.boolean()),
+  maxEligibleAmount: zod.number(),
+  rateOfInterest: zod.number(),
+  lenders: zod.array(
+    zod.object({
+      name: zod.string(),
+      rate: zod.number(),
+      maxAmount: zod.number(),
+      approved: zod.boolean(),
+    }),
+  ),
+  message: zod.string(),
+});

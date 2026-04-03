@@ -10,6 +10,9 @@ import leadsRouter from "./leads";
 import communicationsRouter from "./communications";
 import notificationsRouter from "./notifications";
 import analyticsRouter from "./analytics";
+import lendersRouter from "./lenders";
+import productsRouter from "./products";
+import toolsRouter from "./tools";
 
 const router: IRouter = Router();
 
@@ -24,5 +27,8 @@ router.use(leadsRouter);
 router.use(communicationsRouter);
 router.use(notificationsRouter);
 router.use(analyticsRouter);
+router.use(lendersRouter);
+router.use(productsRouter);
+router.use(toolsRouter);
 
 export default router;
