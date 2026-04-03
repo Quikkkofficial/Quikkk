@@ -1,22 +1,41 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: FinTech Platform API - Loans & Credit Cards
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: users
+    description: User management
+  - name: applications
+    description: Loan & credit card applications
+  - name: vendors
+    description: Vendor/channel partner management
+  - name: commissions
+    description: Commission tracking
+  - name: documents
+    description: Document management
+  - name: notifications
+    description: Notifications
+  - name: communications
+    description: Recovery & communications
+  - name: analytics
+    description: Analytics & dashboard data
+  - name: leads
+    description: Lead management
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +43,883 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # AUTH
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email/password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterBody"
+      responses:
+        "201":
+          description: Registration success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current session
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # USERS
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users (admin)
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [admin, vendor, employee, customer]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListResponse"
+
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create user (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserBody"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{userId}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user by ID
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    put:
+      operationId: updateUser
+      tags: [users]
+      summary: Update user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserBody"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    delete:
+      operationId: deleteUser
+      tags: [users]
+      summary: Delete user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # APPLICATIONS
+  /applications:
+    get:
+      operationId: listApplications
+      tags: [applications]
+      summary: List loan/card applications
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, under_review, approved, rejected, disbursed, cancelled]
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [personal_loan, student_loan, gold_loan, unsecured_loan, business_loan, credit_card]
+        - in: query
+          name: vendorId
+          schema:
+            type: integer
+        - in: query
+          name: customerId
+          schema:
+            type: integer
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Applications list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationListResponse"
+
+    post:
+      operationId: createApplication
+      tags: [applications]
+      summary: Submit a new loan/card application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateApplicationBody"
+      responses:
+        "201":
+          description: Application submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{applicationId}:
+    get:
+      operationId: getApplication
+      tags: [applications]
+      summary: Get application details
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Application details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+    put:
+      operationId: updateApplication
+      tags: [applications]
+      summary: Update application (admin/vendor)
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateApplicationBody"
+      responses:
+        "200":
+          description: Application updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{applicationId}/status:
+    put:
+      operationId: updateApplicationStatus
+      tags: [applications]
+      summary: Update application status
+      parameters:
+        - in: path
+          name: applicationId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusBody"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  # VENDORS
+  /vendors:
+    get:
+      operationId: listVendors
+      tags: [vendors]
+      summary: List all vendors/channel partners
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, inactive, suspended]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Vendors list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VendorListResponse"
+
+    post:
+      operationId: createVendor
+      tags: [vendors]
+      summary: Create a vendor/channel partner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVendorBody"
+      responses:
+        "201":
+          description: Vendor created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+
+  /vendors/{vendorId}:
+    get:
+      operationId: getVendor
+      tags: [vendors]
+      summary: Get vendor by ID
+      parameters:
+        - in: path
+          name: vendorId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vendor details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+
+    put:
+      operationId: updateVendor
+      tags: [vendors]
+      summary: Update vendor
+      parameters:
+        - in: path
+          name: vendorId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVendorBody"
+      responses:
+        "200":
+          description: Vendor updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+
+  /vendors/{vendorId}/team:
+    get:
+      operationId: getVendorTeam
+      tags: [vendors]
+      summary: Get vendor team members
+      parameters:
+        - in: path
+          name: vendorId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Team members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  members:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+                required:
+                  - members
+
+  /vendors/leaderboard:
+    get:
+      operationId: getVendorLeaderboard
+      tags: [vendors]
+      summary: Get top performing vendors
+      parameters:
+        - in: query
+          name: period
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            default: month
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Vendor leaderboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaderboardResponse"
+
+  # COMMISSIONS
+  /commissions:
+    get:
+      operationId: listCommissions
+      tags: [commissions]
+      summary: List commission records
+      parameters:
+        - in: query
+          name: vendorId
+          schema:
+            type: integer
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, paid, cancelled]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Commissions list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommissionListResponse"
+
+  /commissions/summary:
+    get:
+      operationId: getCommissionSummary
+      tags: [commissions]
+      summary: Get commission summary for a vendor
+      parameters:
+        - in: query
+          name: vendorId
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Commission summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommissionSummary"
+
+  # DOCUMENTS
+  /documents:
+    get:
+      operationId: listDocuments
+      tags: [documents]
+      summary: List documents
+      parameters:
+        - in: query
+          name: applicationId
+          schema:
+            type: integer
+        - in: query
+          name: userId
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Documents list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Document"
+                required:
+                  - documents
+
+    post:
+      operationId: uploadDocument
+      tags: [documents]
+      summary: Upload a document
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadDocumentBody"
+      responses:
+        "201":
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+
+  /documents/{documentId}/verify:
+    put:
+      operationId: verifyDocument
+      tags: [documents]
+      summary: Verify or reject a document (admin/KYC)
+      parameters:
+        - in: path
+          name: documentId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyDocumentBody"
+      responses:
+        "200":
+          description: Document verification updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Document"
+
+  # LEADS
+  /leads:
+    get:
+      operationId: listLeads
+      tags: [leads]
+      summary: List leads
+      parameters:
+        - in: query
+          name: assignedTo
+          schema:
+            type: integer
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [new, contacted, qualified, converted, lost]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Leads list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeadListResponse"
+
+    post:
+      operationId: createLead
+      tags: [leads]
+      summary: Create a new lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLeadBody"
+      responses:
+        "201":
+          description: Lead created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+
+  /leads/{leadId}/assign:
+    put:
+      operationId: assignLead
+      tags: [leads]
+      summary: Assign lead to vendor/employee
+      parameters:
+        - in: path
+          name: leadId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignLeadBody"
+      responses:
+        "200":
+          description: Lead assigned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+
+  # COMMUNICATIONS
+  /communications:
+    get:
+      operationId: listCommunications
+      tags: [communications]
+      summary: List communication logs
+      parameters:
+        - in: query
+          name: customerId
+          schema:
+            type: integer
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [sms, email, whatsapp, call]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Communications list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunicationListResponse"
+
+    post:
+      operationId: sendCommunication
+      tags: [communications]
+      summary: Send a communication (SMS, email, WhatsApp)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendCommunicationBody"
+      responses:
+        "201":
+          description: Communication sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Communication"
+
+  /communications/campaigns:
+    get:
+      operationId: listCampaigns
+      tags: [communications]
+      summary: List recovery campaigns
+      responses:
+        "200":
+          description: Campaigns list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignListResponse"
+
+    post:
+      operationId: createCampaign
+      tags: [communications]
+      summary: Create a communication campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignBody"
+      responses:
+        "201":
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+  # NOTIFICATIONS
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List notifications for current user
+      parameters:
+        - in: query
+          name: read
+          schema:
+            type: boolean
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Notifications list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationListResponse"
+
+  /notifications/{notificationId}/read:
+    put:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark notification as read
+      parameters:
+        - in: path
+          name: notificationId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Notification updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  # ANALYTICS
+  /analytics/dashboard:
+    get:
+      operationId: getDashboardAnalytics
+      tags: [analytics]
+      summary: Get admin dashboard analytics summary
+      parameters:
+        - in: query
+          name: period
+          schema:
+            type: string
+            enum: [today, week, month, quarter, year]
+            default: month
+      responses:
+        "200":
+          description: Dashboard analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardAnalytics"
+
+  /analytics/applications:
+    get:
+      operationId: getApplicationAnalytics
+      tags: [analytics]
+      summary: Get application analytics breakdown
+      parameters:
+        - in: query
+          name: period
+          schema:
+            type: string
+            enum: [today, week, month, quarter, year]
+            default: month
+      responses:
+        "200":
+          description: Application analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApplicationAnalytics"
+
+  /analytics/vendors:
+    get:
+      operationId: getVendorAnalytics
+      tags: [analytics]
+      summary: Get vendor performance analytics
+      parameters:
+        - in: query
+          name: period
+          schema:
+            type: string
+            enum: [today, week, month, quarter, year]
+            default: month
+        - in: query
+          name: vendorId
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vendor analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VendorAnalytics"
+
+  /analytics/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [analytics]
+      summary: Get recent activity feed
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentActivityResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +930,1049 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    # AUTH SCHEMAS
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    RegisterBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+      required:
+        - email
+        - password
+        - name
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    # USER SCHEMAS
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [admin, vendor, employee, customer]
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        vendorId:
+          type: integer
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - name
+        - role
+        - status
+        - createdAt
+
+    UserListResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - users
+        - total
+        - page
+        - limit
+
+    CreateUserBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [admin, vendor, employee, customer]
+        vendorId:
+          type: integer
+        password:
+          type: string
+      required:
+        - email
+        - name
+        - role
+        - password
+
+    UpdateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [admin, vendor, employee, customer]
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        vendorId:
+          type: integer
+
+    # APPLICATION SCHEMAS
+    Application:
+      type: object
+      properties:
+        id:
+          type: integer
+        applicationNumber:
+          type: string
+        type:
+          type: string
+          enum: [personal_loan, student_loan, gold_loan, unsecured_loan, business_loan, credit_card]
+        status:
+          type: string
+          enum: [pending, under_review, approved, rejected, disbursed, cancelled]
+        customerId:
+          type: integer
+        vendorId:
+          type: integer
+          nullable: true
+        amount:
+          type: number
+          nullable: true
+        tenure:
+          type: integer
+          nullable: true
+        interestRate:
+          type: number
+          nullable: true
+        purpose:
+          type: string
+          nullable: true
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        panNumber:
+          type: string
+          nullable: true
+        aadhaarNumber:
+          type: string
+          nullable: true
+        monthlyIncome:
+          type: number
+          nullable: true
+        employmentType:
+          type: string
+          nullable: true
+        bankName:
+          type: string
+          nullable: true
+        remarks:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - applicationNumber
+        - type
+        - status
+        - customerId
+        - customerName
+        - customerEmail
+        - customerPhone
+        - createdAt
+        - updatedAt
+
+    ApplicationListResponse:
+      type: object
+      properties:
+        applications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Application"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - applications
+        - total
+        - page
+        - limit
+
+    CreateApplicationBody:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [personal_loan, student_loan, gold_loan, unsecured_loan, business_loan, credit_card]
+        amount:
+          type: number
+        tenure:
+          type: integer
+        purpose:
+          type: string
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+          format: email
+        customerPhone:
+          type: string
+        panNumber:
+          type: string
+        aadhaarNumber:
+          type: string
+        monthlyIncome:
+          type: number
+        employmentType:
+          type: string
+        bankName:
+          type: string
+        vendorId:
+          type: integer
+      required:
+        - type
+        - customerName
+        - customerEmail
+        - customerPhone
+
+    UpdateApplicationBody:
+      type: object
+      properties:
+        amount:
+          type: number
+        tenure:
+          type: integer
+        interestRate:
+          type: number
+        purpose:
+          type: string
+        remarks:
+          type: string
+        bankName:
+          type: string
+
+    UpdateStatusBody:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, under_review, approved, rejected, disbursed, cancelled]
+        remarks:
+          type: string
+      required:
+        - status
+
+    # VENDOR SCHEMAS
+    Vendor:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        commissionRate:
+          type: number
+        totalApplications:
+          type: integer
+        totalApproved:
+          type: integer
+        totalEarnings:
+          type: number
+        city:
+          type: string
+          nullable: true
+        state:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - code
+        - email
+        - phone
+        - status
+        - commissionRate
+        - totalApplications
+        - totalApproved
+        - totalEarnings
+        - createdAt
+
+    VendorListResponse:
+      type: object
+      properties:
+        vendors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Vendor"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - vendors
+        - total
+        - page
+        - limit
+
+    CreateVendorBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        commissionRate:
+          type: number
+        city:
+          type: string
+        state:
+          type: string
+        password:
+          type: string
+      required:
+        - name
+        - email
+        - phone
+        - commissionRate
+        - password
+
+    UpdateVendorBody:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+        commissionRate:
+          type: number
+        city:
+          type: string
+        state:
+          type: string
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        vendorId:
+          type: integer
+        vendorName:
+          type: string
+        vendorCode:
+          type: string
+        totalApplications:
+          type: integer
+        approvedApplications:
+          type: integer
+        approvalRate:
+          type: number
+        totalEarnings:
+          type: number
+        rank:
+          type: integer
+      required:
+        - vendorId
+        - vendorName
+        - vendorCode
+        - totalApplications
+        - approvedApplications
+        - approvalRate
+        - totalEarnings
+        - rank
+
+    LeaderboardResponse:
+      type: object
+      properties:
+        leaderboard:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeaderboardEntry"
+        period:
+          type: string
+      required:
+        - leaderboard
+        - period
+
+    # COMMISSION SCHEMAS
+    Commission:
+      type: object
+      properties:
+        id:
+          type: integer
+        vendorId:
+          type: integer
+        applicationId:
+          type: integer
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [pending, paid, cancelled]
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - vendorId
+        - applicationId
+        - amount
+        - status
+        - createdAt
+
+    CommissionListResponse:
+      type: object
+      properties:
+        commissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Commission"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - commissions
+        - total
+        - page
+        - limit
+
+    CommissionSummary:
+      type: object
+      properties:
+        totalEarned:
+          type: number
+        pendingAmount:
+          type: number
+        paidAmount:
+          type: number
+        thisMonthEarned:
+          type: number
+        lastMonthEarned:
+          type: number
+      required:
+        - totalEarned
+        - pendingAmount
+        - paidAmount
+        - thisMonthEarned
+        - lastMonthEarned
+
+    # DOCUMENT SCHEMAS
+    Document:
+      type: object
+      properties:
+        id:
+          type: integer
+        applicationId:
+          type: integer
+          nullable: true
+        userId:
+          type: integer
+        type:
+          type: string
+          enum: [aadhaar, pan, salary_slip, bank_statement, itr, photo, other]
+        url:
+          type: string
+        fileName:
+          type: string
+        verificationStatus:
+          type: string
+          enum: [pending, verified, rejected]
+        remarks:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - type
+        - url
+        - fileName
+        - verificationStatus
+        - createdAt
+
+    UploadDocumentBody:
+      type: object
+      properties:
+        applicationId:
+          type: integer
+        userId:
+          type: integer
+        type:
+          type: string
+          enum: [aadhaar, pan, salary_slip, bank_statement, itr, photo, other]
+        url:
+          type: string
+        fileName:
+          type: string
+      required:
+        - userId
+        - type
+        - url
+        - fileName
+
+    VerifyDocumentBody:
+      type: object
+      properties:
+        verificationStatus:
+          type: string
+          enum: [verified, rejected]
+        remarks:
+          type: string
+      required:
+        - verificationStatus
+
+    # LEAD SCHEMAS
+    Lead:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+        source:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [new, contacted, qualified, converted, lost]
+        assignedTo:
+          type: integer
+          nullable: true
+        productType:
+          type: string
+          enum: [personal_loan, student_loan, gold_loan, unsecured_loan, business_loan, credit_card]
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - phone
+        - status
+        - createdAt
+
+    LeadListResponse:
+      type: object
+      properties:
+        leads:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lead"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - leads
+        - total
+        - page
+        - limit
+
+    CreateLeadBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        source:
+          type: string
+        productType:
+          type: string
+          enum: [personal_loan, student_loan, gold_loan, unsecured_loan, business_loan, credit_card]
+        notes:
+          type: string
+        assignedTo:
+          type: integer
+      required:
+        - name
+        - phone
+
+    AssignLeadBody:
+      type: object
+      properties:
+        assignedTo:
+          type: integer
+      required:
+        - assignedTo
+
+    # COMMUNICATION SCHEMAS
+    Communication:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        type:
+          type: string
+          enum: [sms, email, whatsapp, call]
+        content:
+          type: string
+        status:
+          type: string
+          enum: [sent, delivered, failed, pending]
+        sentBy:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - customerId
+        - type
+        - content
+        - status
+        - sentBy
+        - createdAt
+
+    CommunicationListResponse:
+      type: object
+      properties:
+        communications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Communication"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - communications
+        - total
+        - page
+        - limit
+
+    SendCommunicationBody:
+      type: object
+      properties:
+        customerId:
+          type: integer
+        type:
+          type: string
+          enum: [sms, email, whatsapp]
+        content:
+          type: string
+        subject:
+          type: string
+      required:
+        - customerId
+        - type
+        - content
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [sms, email, whatsapp, voice]
+        status:
+          type: string
+          enum: [draft, active, paused, completed]
+        targetCount:
+          type: integer
+        sentCount:
+          type: integer
+        deliveredCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - type
+        - status
+        - targetCount
+        - sentCount
+        - deliveredCount
+        - createdAt
+
+    CampaignListResponse:
+      type: object
+      properties:
+        campaigns:
+          type: array
+          items:
+            $ref: "#/components/schemas/Campaign"
+        total:
+          type: integer
+      required:
+        - campaigns
+        - total
+
+    CreateCampaignBody:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [sms, email, whatsapp, voice]
+        content:
+          type: string
+        targetFilter:
+          type: object
+          additionalProperties: true
+      required:
+        - name
+        - type
+        - content
+
+    # NOTIFICATION SCHEMAS
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          enum: [info, success, warning, error]
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - title
+        - message
+        - type
+        - read
+        - createdAt
+
+    NotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notification"
+        total:
+          type: integer
+        unreadCount:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - notifications
+        - total
+        - unreadCount
+        - page
+        - limit
+
+    # ANALYTICS SCHEMAS
+    DashboardAnalytics:
+      type: object
+      properties:
+        totalApplications:
+          type: integer
+        pendingApplications:
+          type: integer
+        approvedApplications:
+          type: integer
+        rejectedApplications:
+          type: integer
+        disbursedApplications:
+          type: integer
+        totalRevenue:
+          type: number
+        totalVendors:
+          type: integer
+        activeVendors:
+          type: integer
+        totalCustomers:
+          type: integer
+        approvalRate:
+          type: number
+        monthlyGrowth:
+          type: number
+        monthlyTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyDataPoint"
+        productBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductDataPoint"
+      required:
+        - totalApplications
+        - pendingApplications
+        - approvedApplications
+        - rejectedApplications
+        - disbursedApplications
+        - totalRevenue
+        - totalVendors
+        - activeVendors
+        - totalCustomers
+        - approvalRate
+        - monthlyGrowth
+        - monthlyTrend
+        - productBreakdown
+
+    MonthlyDataPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        applications:
+          type: integer
+        approved:
+          type: integer
+        revenue:
+          type: number
+      required:
+        - month
+        - applications
+        - approved
+        - revenue
+
+    ProductDataPoint:
+      type: object
+      properties:
+        type:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+      required:
+        - type
+        - count
+        - percentage
+
+    ApplicationAnalytics:
+      type: object
+      properties:
+        byStatus:
+          type: array
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+              count:
+                type: integer
+            required:
+              - status
+              - count
+        byType:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              count:
+                type: integer
+            required:
+              - type
+              - count
+        avgProcessingTime:
+          type: number
+        totalAmount:
+          type: number
+      required:
+        - byStatus
+        - byType
+        - avgProcessingTime
+        - totalAmount
+
+    VendorAnalytics:
+      type: object
+      properties:
+        totalApplications:
+          type: integer
+        approvedApplications:
+          type: integer
+        rejectedApplications:
+          type: integer
+        approvalRate:
+          type: number
+        totalCommissions:
+          type: number
+        pendingCommissions:
+          type: number
+        teamSize:
+          type: integer
+        monthlyTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyDataPoint"
+      required:
+        - totalApplications
+        - approvedApplications
+        - rejectedApplications
+        - approvalRate
+        - totalCommissions
+        - pendingCommissions
+        - teamSize
+        - monthlyTrend
+
+    RecentActivity:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [application_submitted, application_approved, application_rejected, vendor_registered, payment_received, document_uploaded]
+        message:
+          type: string
+        entityId:
+          type: integer
+        userId:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - type
+        - message
+        - entityId
+        - createdAt
+
+    RecentActivityResponse:
+      type: object
+      properties:
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecentActivity"
+      required:
+        - activities

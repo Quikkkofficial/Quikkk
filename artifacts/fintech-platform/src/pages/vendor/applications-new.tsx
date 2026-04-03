@@ -1,0 +1,1 @@
+export default function VendorApplicationsNew() { return <div className="p-8"><h1 className="text-2xl font-bold">New Vendor Application</h1><p>Placeholder</p></div>; }

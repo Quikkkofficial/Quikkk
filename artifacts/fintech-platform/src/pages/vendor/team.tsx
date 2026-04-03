@@ -1,0 +1,1 @@
+export default function VendorTeam() { return <div className="p-8"><h1 className="text-2xl font-bold">Vendor Team</h1><p>Placeholder</p></div>; }

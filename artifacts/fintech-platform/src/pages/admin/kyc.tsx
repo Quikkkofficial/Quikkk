@@ -1,0 +1,1 @@
+export default function AdminKyc() { return <div className="p-8"><h1 className="text-2xl font-bold">Admin KYC</h1><p>Placeholder</p></div>; }

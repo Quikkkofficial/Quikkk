@@ -1,0 +1,1 @@
+export default function VendorCommissions() { return <div className="p-8"><h1 className="text-2xl font-bold">Vendor Commissions</h1><p>Placeholder</p></div>; }

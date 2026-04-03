@@ -1,0 +1,137 @@
+Build a complete, production-ready fintech platform for selling loans and credit cards with a modern UI/UX, fast performance, and scalable architecture.
+
+PROJECT OVERVIEW:
+Create a full-stack platform that allows customers to apply for loans (personal, student, gold, unsecured, etc.) and credit cards, while also enabling vendors/channel partners to sell these products and track performance. The platform must include a customer-facing frontend, vendor dashboard, admin dashboard, backend APIs, authentication system, and integrations with banks/NBFCs.
+
+TECH STACK:
+
+* Frontend: Next.js (React) with modern UI framework (Tailwind CSS or Material UI)
+* Backend: Node.js with Express.js or NestJS
+* Database: PostgreSQL (preferred) or MongoDB
+* Authentication: JWT + OAuth (Google login + company domain login)
+* Storage: AWS S3 or equivalent
+* Messaging: WhatsApp API, SMS gateway, Email service (SendGrid or similar)
+* Deployment: AWS / Vercel / Docker with CI/CD
+
+CORE MODULES:
+
+1. CUSTOMER PORTAL:
+
+* Landing page with modern fintech UI (clean, minimal, premium look)
+* Apply for loans and credit cards
+* Dynamic forms based on loan type
+* Document upload system
+* Real-time application tracking
+* Notifications via SMS, Email, WhatsApp
+
+2. VENDOR / CHANNEL PARTNER DASHBOARD:
+
+* Dashboard showing total applications, approvals, rejections, earnings
+* Submit loan and credit card applications
+* Upload and manage customer documents
+* Track application status in real-time
+* Commission tracking system
+* Team management (add sub-agents, assign leads, track performance)
+
+RECOVERY MODULE (INSIDE VENDOR DASHBOARD):
+
+* Send WhatsApp messages, SMS, Emails
+* Voice broadcasting system
+* Call logging and tracking
+* Campaign management
+* Communication history logs
+* Compliance tracking and audit logs
+
+3. ADMIN DASHBOARD:
+
+* Full business analytics (applications, approvals, revenue, vendor performance)
+* Manage vendors, employees, and roles (RBAC system)
+* Assign and distribute leads (manual + auto-routing)
+* Monitor all applications and update statuses
+* Manage document verification (KYC)
+* Global recovery campaign control
+* Template management for SMS/Email/WhatsApp
+
+BANK & NBFC INTEGRATION:
+
+* Build API layer to integrate with multiple banks/NBFCs
+* Manage API keys and connections
+* Handle loan application submissions via APIs
+* Track API responses and statuses
+* Design system to easily plug in new financial partners
+
+AUTHENTICATION & SECURITY:
+
+* Login via Google OAuth, email/password, company domain
+* Role-based access control (Admin, Vendor, Employee, Customer)
+* Secure JWT session handling
+* Optional multi-factor authentication
+* Encrypted data storage and secure API calls
+* Full audit logs
+
+API ARCHITECTURE:
+
+* Auth API
+* User Management API
+* Loan & Credit Card Application API
+* Vendor Management API
+* Recovery & Communication API
+* Notification API
+* External integrations (banks, WhatsApp, SMS, email)
+
+UI/UX REQUIREMENTS:
+
+* Modern, premium fintech design (inspired by global apps, not outdated)
+* Fast loading (<2 seconds)
+* Mobile-first responsive design
+* Clean dashboards with intuitive navigation
+* Minimal clicks for key actions
+* Smooth animations and transitions
+* Professional color palette and typography
+
+PERFORMANCE:
+
+* Optimized backend queries
+* API response caching where needed
+* Scalable architecture
+* Lightweight frontend for fast load speed
+
+DATABASE DESIGN:
+
+* Users (roles: admin, vendor, employee, customer)
+* Applications (loan/card details, status tracking)
+* Documents (secure storage references)
+* Vendors & teams
+* Commissions & earnings
+* Communication logs
+* API integrations
+
+EXTRA FEATURES:
+
+* Commission system for vendors
+* Leaderboard for top-performing vendors
+* Real-time analytics dashboard
+* Auto lead assignment logic
+* Notification system (multi-channel)
+
+DEPLOYMENT:
+
+* Dockerized setup
+* CI/CD pipeline
+* Cloud deployment (AWS preferred)
+* Load balancing and scalability setup
+
+OUTPUT REQUIREMENTS:
+
+* Clean, modular, production-ready code (frontend + backend)
+* No errors, fully functional
+* API documentation (Swagger/Postman)
+* Database schema
+* Deployment instructions
+
+IMPORTANT:
+
+* Ensure high performance and fast response times
+* Ensure modern UI/UX (no outdated design)
+* Ensure scalability for future expansion (insurance, investments, credit scoring)
+* Code should be clean, maintainable, and well-structured

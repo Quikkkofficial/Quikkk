@@ -1,0 +1,1 @@
+export default function VendorDashboard() { return <div className="p-8"><h1 className="text-2xl font-bold">Vendor Dashboard</h1><p>Placeholder</p></div>; }
